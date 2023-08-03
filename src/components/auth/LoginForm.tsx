@@ -4,13 +4,15 @@ import styled from "styled-components";
 import axios from "axios";
 import shortid from "shortid";
 import { useNavigate } from "react-router-dom";
+import { SearchLoginUser } from "../../recoil/LoginUser";
+import { useSetRecoilState } from "recoil";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const value = useSetRecoilState(SearchLoginUser);
 
   const handleLogin = async (values: any) => {
     // alert("TODO 요구사항에 맞추어 기능을 완성해주세요.");
-
     try {
       // TODO: email과 password를 DB에서 찾아서 로그인 검증
       const response = await axios.get(
@@ -28,6 +30,10 @@ const LoginForm: React.FC = () => {
 
         // TODO: 성공 시(2), localStorage에 token과 email을 저장
         // TODO: 성공 시(3), token은 shortId로 생성
+        const newData = response.data.find(
+          (item: any) => item.email === values.email
+        );
+        value(newData.email);
         localStorage.setItem("token", shortid.generate());
         localStorage.setItem("email", values.email);
 
@@ -37,6 +43,7 @@ const LoginForm: React.FC = () => {
     } catch (error) {
       // TODO: 네트워크 등 기타 문제인 경우, "일시적인 오류가 발생하였습니다. 고객센터로 연락주세요." alert
       alert("일시적인 오류가 발생하였습니다. 고객센터로 연락주세요.");
+      console.log(error);
     }
   };
 
